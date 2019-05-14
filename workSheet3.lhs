@@ -51,54 +51,54 @@ Let Expr′ be a type alias for Fix ExprU . Write down three values of type Expr
 >   fmap f (L x) = L (fmap f x)
 >   fmap f (R x) = R (fmap f x)
 
-> data ValU k = ValU Int
-> data AddU k = AddU k k
-> data SubU k = SubU k k
+> data ValF k = ValF Int
+> data AddF k = AddF k k
+> data SubF k = SubF k k
 
-> instance Functor SubU where
->   fmap f (SubU x y) = SubU (f x)(f y)
+> instance Functor SubF where
+>   fmap f (SubU x y) = SubF (f x)(f y)
 
-> instance Functor ValU where
->   fmap f (ValU x) = ValU x
+> instance Functor ValF where
+>   fmap f (ValU x) = ValF x
 
-> instance Functor AddU where
->   fmap f (AddU x y) = AddU (f x)(f y)
+> instance Functor AddF where
+>   fmap f (AddU x y) = AddF (f x)(f y)
 
-> evalAddSub :: Fix (ValU :+: AddU :+: SubU) -> Int
+> evalAddSub :: Fix (ValF :+: AddF :+: SubF) -> Int
 > evalAddSub = cata alg
->   where alg (L (ValU x))       = x
->         alg (R (L (AddU x y))) = x + y
->         alg (R (R (SubU x y))) = x - y
+>   where alg (L (ValF x))       = x
+>         alg (R (L (AddF x y))) = x + y
+>         alg (R (R (SubF x y))) = x - y
 
 > class Functor f => Alg f a where
 >   alg :: f a -> a
 
-> instance Alg ValU Int where
+> instance Alg ValF Int where
 >   alg (ValU x) = x
 
-> instance Alg AddU Int where
+> instance Alg AddF Int where
 >   alg (AddU x y) = x + y
 
-> instance Alg SubU Int where
+> instance Alg SubF Int where
 >   alg (SubU x y) = x - y
 
-> instance Alg MulU Int where
+> instance Alg MulF Int where
 >   alg (MulU x y) = x * y
 
-> instance Functor MulU where
+> instance Functor MulF where
 >   fmap f (MulU x y) = MulU (f x)(f y)
 
-> type Expr = Fix (Val :+: Add :+: Sub :+: Mul)
+> type ExprF = Fix (ValF :+: AddF :+: SubF :+: MulF)
 
-> eval :: Expr -> Int
-> eval = cati
+> evalF :: Expr -> Int
+> evalF = cati
 
 > instance (Alg f a, Alg g a) => Alg (f :+: g) a where
 > alg (L x) = alg x
 > alg (R y) = alg y
 
-> evalAddSub :: Fix (Val : + : Add : + : Sub) -> Int
-> evalAddSub = cata alg
+> evalAddSubF :: Fix (ValF :+: AddF :+: SubF) -> Int
+> evalAddSubF = cata alg
 
 > cati :: Alg f a => Fix f -> a
-> cati = alf . fmap cati . inop
+> cati = alg . fmap cati . inop
