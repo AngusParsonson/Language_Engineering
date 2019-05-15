@@ -9,7 +9,7 @@
 > import Data.Map
 
 - Op (Add (Var "4") (Var "3"))
-- Op (Add (Op (AddU (Var "4") (Var "3"))) (Op (Add (Var "7") (Var "10"))))
+- Op (Add (Op (Add (Var "4") (Var "3"))) (Op (Add (Var "7") (Var "10"))))
 
 > data Free f a = Var a | Op (f (Free f a))
 
